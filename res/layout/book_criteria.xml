@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:gravity="center_horizontal" android:padding="10px"
+    >
+
+    <TextView android:id="@+id/intro_blurb_criteria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:layout_marginLeft="10px"
+        android:layout_marginBottom="15px" style="@style/intro_blurb"
+        android:text="@string/intro_blurb_criteria" />
+
+    <TextView android:id="@+id/title_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/intro_blurb_criteria"
+        android:layout_marginLeft="10px" android:layout_marginBottom="5px"
+        style="@style/label" android:text="@string/title_label" />
+    <EditText android:id="@+id/title"
+        android:layout_width="178dp"
+        android:layout_height="wrap_content"
+        style="@style/edit_text"
+        android:layout_toRightOf="@+id/get_books_button"
+        android:layout_alignTop="@+id/title_label"
+        android:layout_alignRight="@+id/title_label" />
+
+    <TextView android:id="@+id/author_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/label"
+        android:text="@string/author_label"
+        android:layout_alignLeft="@+id/intro_blurb_criteria"
+        android:layout_below="@+id/title" />
+    <EditText android:id="@+id/author"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_marginBottom="20px"
+        android:layout_alignLeft="@+id/title" />
+
+    <Button android:id="@+id/get_books_button"
+        android:layout_width="96dp"
+        android:layout_height="34dp"
+        android:text="@string/get_books_button_label"
+        android:layout_alignLeft="@+id/intro_blurb_criteria"
+        android:layout_below="@+id/author" />
+
+</RelativeLayout>

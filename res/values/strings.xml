@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_short_name">Books!</string>
+    <string name="app_name_books">BookSearch - Books</string>
+    <string name="app_name_book">BookSearch - Book</string>
+
+
+    <string name="app_name">BookSearch</string>
+    <string name="book_criteria">Book Finder – Criteria</string>
+    <string name="menu_get_books">Get results</string>
+    <string name="title_not_supplied_message">Title and Author not supplied</string>
+    <string name="alert_label">Alert!!</string>
+
+    <string name="menu_web_book">Get full book</string>
+    <string name="menu_change_criteria">Change book criteria</string>
+    <string name="menu_get_next_page">Get next page of results</string>
+
+    <string name="intro_blurb_criteria">Enter book criteria</string>
+    <string name="intro_blurb_detail">Book details</string>
+    <string name="title_label">Title:</string>
+    <string name="author_label">Author:</string>
+    <string name="get_books_button_label">Get Books</string>
+</resources>
