@@ -16,6 +16,7 @@ public class Book {
     public String imageLink;
     public String link;
     public String description;
+    public int coverID;
 
     public Book() {
     }
@@ -31,6 +32,10 @@ public class Book {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public void setCoverID(int coverID) {
+        this.coverID = coverID;
     }
 
     @Override

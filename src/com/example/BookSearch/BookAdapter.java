@@ -1,12 +1,12 @@
 package com.example.BookSearch;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import com.example.BookSearch.data.Book;
 
 import java.util.List;
@@ -18,75 +18,60 @@ import java.util.List;
  * Time: 10:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BookAdapter extends BaseAdapter {
-    private final Context context;
-    private final List<Book> bookList;
+public class BookAdapter extends ArrayAdapter<Book> {
+    private Context context;
+    private List<Book> bookList;
 
     public BookAdapter(Context context, List<Book> bookList) {
+        super(context, android.R.layout.simple_list_item_1, bookList);
         this.context = context;
         this.bookList = bookList;
     }
 
     @Override
     public int getCount() {
-        return bookList.size();
+        if (bookList != null)
+            return bookList.size();
+        return 0;
     }
 
     @Override
-    public Object getItem(int position) {
-        return bookList.get(position);
+    public Book getItem(int position) {
+        if (bookList != null)
+            return bookList.get(position);
+        return null;
     }
 
     @Override
     public long getItemId(int position) {
-        return position;
+        if (bookList != null)
+            return bookList.get(position).hashCode();
+        return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Book review = bookList.get(position);
-        if (convertView == null || !(convertView instanceof BookListView)) {
-            return new BookListView(context, review.author,
-                    review.title);
-        }
-        BookListView view = (BookListView) convertView;
-        view.setName(review.author);
-        view.setRating(review.title);
-        return view;
+        View v = inflateView(convertView, parent);
+        Book book = bookList.get(position);
+        TextView title = (TextView) v.findViewById(R.id.book_title);
+        title.setText(book.title);
+        return v;
     }
 
-    private final class BookListView extends LinearLayout {
-        private TextView author;
-        private TextView title;
-
-        public BookListView(
-                Context context, String itemName,
-                String itemRating) {
-            super(context);
-            setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams params =
-                    new LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(5, 3, 5, 0);
-            author = new TextView(context);
-            author.setText(itemName);
-            author.setTextSize(16f);
-            author.setTextColor(Color.WHITE);
-            addView(author, params);
-            title = new TextView(context);
-            title.setText(itemRating);
-            title.setTextSize(16f);
-            title.setTextColor(Color.GRAY);
-            addView(title, params);
+    private View inflateView(View v, ViewGroup parent) {
+        if (v == null) {
+            LayoutInflater inflater = (LayoutInflater)
+                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = inflater.inflate(R.layout.book_list_row, parent, false);
         }
+        return v;
+    }
 
-        public void setName(String itemName) {
-            author.setText(itemName);
-        }
+    public List<Book> getItemList() {
+        return bookList;
+    }
 
-        public void setRating(String itemRating) {
-            title.setText(itemRating);
-        }
+    public void setItemList(List<Book> bookList) {
+        this.bookList = bookList;
     }
 }

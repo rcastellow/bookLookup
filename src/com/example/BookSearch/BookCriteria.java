@@ -87,4 +87,7 @@ public class BookCriteria extends Activity {
                 new Intent(Constants.INTENT_ACTION_VIEW_LIST);
         startActivity(intent);
     }
+
+
+
 }
