@@ -3,16 +3,17 @@ package com.example.BookSearch;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.example.BookSearch.data.Book;
+import com.example.BookSearch.data.QueryURLFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -25,74 +26,95 @@ import java.net.URLConnection;
  */
 public class BookDetail extends Activity {
 
-    private static final int MENU_CALL_REVIEW = Menu.FIRST + 2;
-    private static final int MENU_MAP_REVIEW = Menu.FIRST + 1;
-    private static final int MENU_WEB_REVIEW = Menu.FIRST;
     private String imageLink;
-    private String link;
-    private TextView author;
-    private TextView title;
+    private TextView name_detail;
     private ImageView reviewImage;
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            if ((imageLink != null) && !imageLink.equals("")) {
-                try {
-                    URL url = new URL(imageLink);
-                    URLConnection conn = url.openConnection();
-                    conn.connect();
-                    BufferedInputStream bis = new
-                            BufferedInputStream(conn.getInputStream());
-                    Bitmap bm = BitmapFactory.decodeStream(bis);
-                    bis.close();
-                    reviewImage.setImageBitmap(bm);
-                } catch (IOException e) {
-                    // log and or handle here
-                }
-            } else {
-                reviewImage.setImageResource(R.drawable.no_review_image);
-            }
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.book_detail);
-        author = (TextView) findViewById(R.id.author);
-        title = (TextView) findViewById(R.id.title);
-
-        BookSearchApplication application =
-                (BookSearchApplication) getApplication();
+        BookSearchApplication application = (BookSearchApplication) getApplication();
         Book currentBook = application.getCurrentBook();
-
-        link = currentBook.link;
-        imageLink = currentBook.imageLink;
-
-        if (title != null) {
-            title.setText(currentBook.title);
-        }
-
-        if (author != null) {
-            author.setText(currentBook.author);
-        }
-
-//        if ((currentBook.author != null) &&
-//                !currentBook.author.equals("")) {
-//            author.setText(currentBook.author);
-//        } else {
-//            author.setText("NA");
-//        }
+        setupText(currentBook);
+        setupImage(currentBook);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-//        menu.add(0, BookDetail.MENU_WEB_REVIEW, 0,
-//                R.string.menu_web_).setIcon(
-//                android.R.drawable.ic_menu_info_details);
-//        menu.add(0, BookDetail.MENU_MAP_REVIEW, 1,
-//                R.string.menu_map_review).setIcon(
-//                android.R.drawable.ic_menu_mapmode);
-        return true;
+    private void setupImage(Book currentBook) {
+        reviewImage = (ImageView) findViewById(R.id.review_image);
+        final QueryURLFactory factory = new QueryURLFactory(currentBook);
+        this.imageLink = factory.getImageURL();
+        (new BitmapWorker(reviewImage)).execute();
+    }
+
+    private void setupText(Book currentBook) {
+        name_detail = (TextView) findViewById(R.id.name_detail);
+        if (name_detail != null) {
+            name_detail.setText(currentBook.author + "\n" + currentBook.title);
+        }
+    }
+
+    private class BitmapWorker extends AsyncTask<String, Void, Bitmap> {
+        private final WeakReference<ImageView> imageViewReference;
+
+        public BitmapWorker(ImageView imageView) {
+            imageViewReference = new WeakReference<ImageView>(imageView);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            if ((imageLink != null) && !imageLink.equals("")) {
+                return getImageLink();
+            } else {
+                reviewImage.setImageResource(R.drawable.book_icon);
+                return null;
+            }
+        }
+
+        private Bitmap getImageLink() {
+            Bitmap bm = getBitmapFromURL();
+            if (bm != null) {
+                return bm;
+            } else {
+                reviewImage.setImageResource(R.drawable.book_icon);
+                return null;
+            }
+        }
+
+        private Bitmap getBitmapFromURL() {
+            BufferedInputStream bis = null;
+            try {
+                URLConnection conn = (new URL(imageLink)).openConnection();
+                conn.connect();
+                bis = new BufferedInputStream(conn.getInputStream());
+                return BitmapFactory.decodeStream(bis);
+            } catch (IOException e) {
+                return null;
+            } finally {
+                closeStream(bis);
+            }
+        }
+
+        private void closeStream(BufferedInputStream bis) {
+            try {
+                if (bis != null)
+                    bis.close();
+            } catch (IOException e) {}
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (imageViewReference != null && bitmap != null) {
+                final ImageView imageView = imageViewReference.get();
+                final Bitmap returnedImage = bitmap;
+                if (imageView != null)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(returnedImage);
+                        }
+                    });
+            }
+        }
     }
 }
